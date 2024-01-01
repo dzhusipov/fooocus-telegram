@@ -7,7 +7,7 @@ from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 import requests
 import os
 
-fooocus_url = "http://100.71.129.59:8888/v1/generation/text-to-image"
+fooocus_url = "http://192.168.1.42:8888/v1/generation/text-to-image"
 
 logging.basicConfig(
     level=logging.INFO,
@@ -20,7 +20,7 @@ logging.basicConfig(
 
 
 async def get_job_status(job_id):
-    url = 'http://100.71.129.59:8888/v1/generation/query-job'
+    url = 'http://192.168.1.42:8888/v1/generation/query-job'
     params = {
         'job_id': job_id,
         'require_step_preivew': True
@@ -175,7 +175,7 @@ async def call_fooocus(prompt, performance):
     response = requests.post(fooocus_url, json=data)
     logging.info(response.json())
 
-    image_url = response.json()[0]['url'].replace("127.0.0.1", "100.71.129.59")
+    image_url = response.json()[0]['url'].replace("127.0.0.1", "192.168.1.42")
     # download image by url to tmp folder
     return image_url
 
@@ -256,7 +256,7 @@ async def make_async(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
     await image_identifier.delete()
     await text_identifier.edit_text(f'Job progress: 100%')
-    result_image = job_status["job_result"][0]["url"].replace("127.0.0.1", "100.71.129.59")
+    result_image = job_status["job_result"][0]["url"].replace("127.0.0.1", "192.168.1.42")
 
     file = await get_image_url(result_image)
     await update.message.reply_photo(file)
