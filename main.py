@@ -162,7 +162,7 @@ async def make_async(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     result = update.message.text.replace("/async", "").strip()
     text_identifier = await update.message.reply_text(f'Starting generate...')
 
-    job_id = await call_fooocus_async(result, "Speed")
+    job_id = await call_fooocus_async(result, "Quality")
     job_status = await get_job_status(job_id)
     image_identifier = None
 
