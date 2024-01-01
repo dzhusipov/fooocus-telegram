@@ -165,7 +165,6 @@ async def make_async(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     job_id = await call_fooocus_async(result, "Speed")
     job_status = await get_job_status(job_id)
     image_identifier = None
-    job_progress = "0"
 
     while job_status["job_stage"] == "RUNNING" or job_status["job_stage"] == "WAITING":
         try:
@@ -185,7 +184,6 @@ async def make_async(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
         time.sleep(1)
         job_status = await get_job_status(job_id)
-        job_progress = job_status["job_progress"]
 
     await image_identifier.delete()
     await text_identifier.edit_text(f'Job progress: 100%')
