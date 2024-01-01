@@ -186,7 +186,7 @@ async def make_async(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         job_status = await get_job_status(job_id)
 
     await image_identifier.delete()
-    await text_identifier.edit_text(f'Job progress: 100%')
+    await text_identifier.delete()
     result_image = job_status["job_result"][0]["url"].replace("127.0.0.1", "192.168.1.42")
 
     file = await get_image_url(result_image)
