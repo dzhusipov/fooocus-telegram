@@ -8,8 +8,8 @@ import requests
 import os
 
 fooocus_url = "http://192.168.1.42:8888/v1/generation/"
-generate_image = "text-to-image"
-get_job_status = "query-job"
+generate_image_uri = "text-to-image"
+get_job_status_uri = "query-job"
 
 logging.basicConfig(
     level=logging.INFO,
@@ -86,7 +86,8 @@ def return_data(prompt, performance, async_process):
 
 
 async def get_job_status(job_id):
-    url = fooocus_url + get_job_status
+    url = fooocus_url + get_job_status_uri
+    print(url)
     params = {
         'job_id': job_id,
         'require_step_preivew': True
@@ -102,7 +103,7 @@ async def call_fooocus_async(prompt, performance):
 
     # performance = "Quality" || "Speed" || "Balanced"
     data = return_data(prompt, performance, True)
-    response = requests.post(fooocus_url + generate_image, json=data)
+    response = requests.post(fooocus_url + generate_image_uri, json=data)
     logging.info(response.json())
 
     job_id = response.json()['job_id']
@@ -114,7 +115,7 @@ async def call_fooocus(prompt, performance):
     logging.info("Calling fooocus with prompt: " + prompt)
     # performance = "Quality" || "Speed" || "Balanced"
     data = return_data(prompt, performance, False)
-    response = requests.post(fooocus_url + generate_image, json=data)
+    response = requests.post(fooocus_url + generate_image_uri, json=data)
     logging.info(response.json())
 
     image_url = response.json()[0]['url'].replace("127.0.0.1", "192.168.1.42")
