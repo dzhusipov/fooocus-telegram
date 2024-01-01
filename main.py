@@ -1,4 +1,5 @@
 import shutil
+import logging
 
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
@@ -6,11 +7,23 @@ import requests
 import os
 
 
-async def call_fooocus(prompt):
-    print("Calling fooocus with prompt: " + prompt)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.FileHandler("debug.log"),
+        logging.StreamHandler()
+    ]
+)
+
+
+async def call_fooocus(prompt, performance):
+    logging.info("Calling fooocus with prompt: " + prompt)
     url = "http://100.71.129.59:8888/v1/generation/text-to-image"
     # url = "http://192.168.1.42:8888/v1/generation/text-to-image"
-
+    # performance = "Quality"
+    # performance = "Speed"
+    # performance = "Balanced"
     data = {
               "prompt": prompt,
               "negative_prompt": "",
@@ -19,7 +32,7 @@ async def call_fooocus(prompt):
                 "Fooocus Enhance",
                 "Fooocus Sharp"
               ],
-              "performance_selection": "Quality",
+              "performance_selection": performance,
               "aspect_ratios_selection": "1152*896",
               "image_number": 1,
               "image_seed": -1,
@@ -72,7 +85,8 @@ async def call_fooocus(prompt):
               "webhook_url": "string"
             }
     response = requests.post(url, json=data)
-    print(response.json())
+    logging.info(response.json())
+
     image_url = response.json()[0]['url'].replace("127.0.0.1", "100.71.129.59")
     # download image by url to tmp folder
     return image_url
@@ -99,10 +113,12 @@ async def get_image_url(image_url):
             response.raw.decode_content = True  # Ensure the complete image is downloaded
             shutil.copyfileobj(response.raw, out_file)
 
-        print(f"Image successfully downloaded to {file_path}")
+        logging.info(f"Image successfully downloaded to {file_path}")
+
+        # print(f"Image successfully downloaded to {file_path}")
         return "tmp/" + file_name
     else:
-        print(f"Failed to retrieve the image. Status code: {response.status_code}")
+        logging.error(f"Failed to retrieve the image. Status code: {response.status_code}")
         return "error"
 
 
@@ -114,10 +130,9 @@ async def make(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     # Removing "/make" from the string
     result = update.message.text.replace("/make", "").strip()
     await update.message.reply_text(f'Starting generate image with prompt: {result}')
-    done_url = await call_fooocus(result)
+    done_url = await call_fooocus(result, "Speed")
     file = await get_image_url(done_url)
     await update.message.reply_photo(file)
-
 
 
 app = ApplicationBuilder().token("6778017668:AAEO_z45JQkygK1T8_J8e98GeBTSnOqFaAI").build()
