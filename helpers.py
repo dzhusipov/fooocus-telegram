@@ -4,6 +4,10 @@ import requests
 import logging
 from dotenv import load_dotenv
 import shutil
+import pika
+import uuid
+import json
+
 
 # Load API configuration from environment variables
 load_dotenv()
@@ -12,6 +16,13 @@ FOOOCUS_PORT = os.getenv("FOOOCUS_PORT")
 FOOOCUS_URL = f"http://{FOOOCUS_IP}:{FOOOCUS_PORT}/v1/generation/"
 GENERATE_IMAGE_URI = "text-to-image"
 GET_JOB_STATUS_URI = "query-job"
+
+# rabbitmq
+rabbitmq_host = os.getenv("RABBITMQ_HOST")
+connection = pika.BlockingConnection(pika.ConnectionParameters(host=rabbitmq_host))
+channel = connection.channel()
+channel.queue_declare(queue='task_queue', durable=True)
+
 
 def return_data(prompt, performance, async_process):
     data = {
@@ -98,14 +109,32 @@ async def get_image_url(image_url):
 
 async def call_fooocus_async(prompt, performance):
     logging.info("Calling fooocus async with prompt: {prompt}")
-
-    # performance = "Quality" || "Speed" || "Balanced"
+    task_id = str(uuid.uuid4())
+    
+    # # performance = "Quality" || "Speed" || "Balanced"
     data = return_data(prompt, performance, True)
-    response = requests.post(FOOOCUS_URL + GENERATE_IMAGE_URI, json=data, timeout=30)
-    # logging.info(response.json())
-    job_id = response.json()['job_id']
-    # download image by url to tmp folder
-    return job_id
+    # response = requests.post(FOOOCUS_URL + GENERATE_IMAGE_URI, json=data, timeout=30)
+    # # logging.info(response.json())
+    # job_id = response.json()['job_id']
+    # # download image by url to tmp folder
+    # return job_id
+    
+    # Create your message with the task_id
+    message = {
+        'task_id': task_id,
+        'data' : data
+    }
+
+    # Send the task to RabbitMQ
+    channel.basic_publish(
+        exchange='',
+        routing_key='task_queue',
+        body=json.dumps(message),
+        properties=pika.BasicProperties(
+            delivery_mode=2,  # make message persistent
+        ))
+    logging.info("[x] Sent {message} to RabbitMQ with Task ID: {task_id}")
+    return task_id  # returning Task ID for future reference
 
 
 async def call_fooocus(prompt, performance):
