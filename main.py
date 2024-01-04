@@ -2,14 +2,21 @@ import shutil
 import logging
 import time
 import base64
+import os
 from telegram import Update, InputMediaPhoto
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 import requests
-import os
+from dotenv import load_dotenv
 
-fooocus_url = "http://192.168.1.42:8888/v1/generation/"
-generate_image_uri = "text-to-image"
-get_job_status_uri = "query-job"
+load_dotenv()  # load environment variables from .env file
+
+api_key = os.getenv("API_KEY")  # use environment variable
+
+FOOOCUS_IP = os.getenv("FOOOCUS_IP")
+FOOOCUS_PORT = os.getenv("FOOOCUS_PORT")
+FOOOCUS_URL = "http://{FOOOCUS_IP}:{FOOOCUS_PORT}/v1/generation/"
+GENERATE_IMAGE_URI = "generate_image"
+GET_JOB_STATUS_URI = "get_job_status"
 
 logging.basicConfig(
     level=logging.INFO,
@@ -86,7 +93,7 @@ def return_data(prompt, performance, async_process):
 
 
 async def get_job_status(job_id):
-    url = fooocus_url + get_job_status_uri
+    url = FOOOCUS_URL + GET_JOB_STATUS_URI
     print(url)
     params = {
         'job_id': job_id,
@@ -103,7 +110,7 @@ async def call_fooocus_async(prompt, performance):
 
     # performance = "Quality" || "Speed" || "Balanced"
     data = return_data(prompt, performance, True)
-    response = requests.post(fooocus_url + generate_image_uri, json=data)
+    response = requests.post(FOOOCUS_URL + GENERATE_IMAGE_URI, json=data)
     logging.info(response.json())
 
     job_id = response.json()['job_id']
@@ -115,7 +122,7 @@ async def call_fooocus(prompt, performance):
     logging.info("Calling fooocus with prompt: " + prompt)
     # performance = "Quality" || "Speed" || "Balanced"
     data = return_data(prompt, performance, False)
-    response = requests.post(fooocus_url + generate_image_uri, json=data)
+    response = requests.post(FOOOCUS_URL + GENERATE_IMAGE_URI, json=data)
     logging.info(response.json())
 
     image_url = response.json()[0]['url'].replace("127.0.0.1", "192.168.1.42")
@@ -149,7 +156,7 @@ async def hello(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 async def make(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     # Removing "/make" from the string
     result = update.message.text.replace("/make", "").strip()
-    identifier = await update.message.reply_text(f'Starting generate...')
+    identifier = await update.message.reply_text("Starting generate...")
 
     await identifier.edit_text(f'Generating image with prompt: {result}')
     done_url = await call_fooocus(result, "Speed")
@@ -160,7 +167,7 @@ async def make(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 async def make_async(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     # Removing "/make" from the string
     result = update.message.text.replace("/async", "").strip()
-    text_identifier = await update.message.reply_text(f'Starting generate...')
+    text_identifier = await update.message.reply_text("Starting generate...")
 
     job_id = await call_fooocus_async(result, "Quality")
     job_status = await get_job_status(job_id)
@@ -178,11 +185,9 @@ async def make_async(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
                 # await text_identifier.edit_text(f'Job progress: {job_progress}%')
                 await text_identifier.edit_text(f'{progress_bar(job_status["job_progress"])}')
-        except:
-            logging.error(f"Unhandled exception")
-            pass
-
-        time.sleep(1)
+        except Exception:
+            logging.error("Unhandled exception")
+            time.sleep(1)
         job_status = await get_job_status(job_id)
 
     await image_identifier.delete()
@@ -200,7 +205,7 @@ def progress_bar(percentage):
     return f"[{bar}] {percentage}%"  # Fo
 
 
-app = ApplicationBuilder().token("6778017668:AAEO_z45JQkygK1T8_J8e98GeBTSnOqFaAI").build()
+app = ApplicationBuilder().token(os.getenv("BOT_TOKEN") ).build()
 app.add_handler(CommandHandler("make", make))
 app.add_handler(CommandHandler("async", make_async))
 app.run_polling()

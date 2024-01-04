@@ -1,2 +1,5 @@
 .idea/
 tmp/*
+venv/
+.env
+debug.log
