@@ -1,0 +1,1 @@
+### Fooocus telegram generator
