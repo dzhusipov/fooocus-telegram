@@ -1,8 +1,0 @@
-2024-01-04 09:27:30,458 [INFO] HTTP Request: POST https://api.telegram.org/botYOUR_BOT_TOKEN/getMe "HTTP/1.1 404 Not Found"
-2024-01-04 09:30:20,933 [INFO] HTTP Request: POST https://api.telegram.org/botYOUR_BOT_TOKEN/getMe "HTTP/1.1 404 Not Found"
-2024-01-04 09:30:49,229 [INFO] HTTP Request: POST https://api.telegram.org/bot1561413102:AAFreMRPXFjOxU8RSkQvwNXyuALiD2bi_vM/getMe "HTTP/1.1 200 OK"
-2024-01-04 09:30:49,387 [INFO] HTTP Request: POST https://api.telegram.org/bot1561413102:AAFreMRPXFjOxU8RSkQvwNXyuALiD2bi_vM/deleteWebhook "HTTP/1.1 200 OK"
-2024-01-04 09:30:49,390 [INFO] Application started
-2024-01-04 09:30:58,660 [INFO] HTTP Request: POST https://api.telegram.org/bot1561413102:AAFreMRPXFjOxU8RSkQvwNXyuALiD2bi_vM/getUpdates "HTTP/1.1 200 OK"
-2024-01-04 09:30:58,662 [INFO] Application is stopping. This might take a moment.
-2024-01-04 09:30:58,662 [INFO] Application.stop() complete
