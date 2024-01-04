@@ -1,10 +1,16 @@
 # bot_commands.py
 import logging
 import time
+import os
 import base64
+from dotenv import load_dotenv
 from telegram import Update, InputMediaPhoto
 from telegram.ext import CommandHandler, ContextTypes
 from helpers import get_image_url, call_fooocus, call_fooocus_async, get_job_status, progress_bar
+
+# Load API configuration from environment variables
+load_dotenv()
+FOOOCUS_IP = os.getenv("FOOOCUS_IP")
 
 
 async def hello(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -50,7 +56,7 @@ async def make_async(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
     await image_identifier.delete()
     await text_identifier.delete()
-    result_image = job_status["job_result"][0]["url"].replace("127.0.0.1", "192.168.1.42")
+    result_image = job_status["job_result"][0]["url"].replace("127.0.0.1", FOOOCUS_IP)
 
     file = await get_image_url(result_image)
     await update.message.reply_photo(file)

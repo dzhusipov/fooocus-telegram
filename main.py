@@ -2,8 +2,8 @@
 import logging
 import os
 from dotenv import load_dotenv
-from bot_commands import setup_handlers
 from telegram.ext import ApplicationBuilder
+from bot_commands import setup_handlers
 
 # Load environment variables
 load_dotenv()

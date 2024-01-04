@@ -10,8 +10,8 @@ load_dotenv()
 FOOOCUS_IP = os.getenv("FOOOCUS_IP")
 FOOOCUS_PORT = os.getenv("FOOOCUS_PORT")
 FOOOCUS_URL = f"http://{FOOOCUS_IP}:{FOOOCUS_PORT}/v1/generation/"
-GENERATE_IMAGE_URI = "generate_image"
-GET_JOB_STATUS_URI = "get_job_status"
+GENERATE_IMAGE_URI = "text-to-image"
+GET_JOB_STATUS_URI = "query-job"
 
 def return_data(prompt, performance, async_process):
     data = {
@@ -78,7 +78,7 @@ def return_data(prompt, performance, async_process):
 
 
 async def get_image_url(image_url):
-    response = requests.get(image_url, stream=True)
+    response = requests.get(image_url, stream=True, timeout=30)
     if response.status_code == 200:
         temp_dir = os.path.join(os.getcwd(), "tmp")
         os.makedirs(temp_dir, exist_ok=True)
@@ -89,34 +89,33 @@ async def get_image_url(image_url):
             response.raw.decode_content = True  # Ensure the complete image is downloaded
             shutil.copyfileobj(response.raw, out_file)
 
-        logging.info(f"Image successfully downloaded to {file_path}")
+        logging.info("Image successfully downloaded to {file_path}")
         return "tmp/" + file_name
     else:
-        logging.error(f"Failed to retrieve the image. Status code: {response.status_code}")
+        logging.error("Failed to retrieve the image. Status code: {response.status_code}")
         return "error"
     
 
 async def call_fooocus_async(prompt, performance):
-    logging.info("Calling fooocus async with prompt: " + prompt)
+    logging.info("Calling fooocus async with prompt: {prompt}")
 
     # performance = "Quality" || "Speed" || "Balanced"
     data = return_data(prompt, performance, True)
-    response = requests.post(FOOOCUS_URL + GENERATE_IMAGE_URI, json=data)
-    logging.info(response.json())
-
+    response = requests.post(FOOOCUS_URL + GENERATE_IMAGE_URI, json=data, timeout=30)
+    # logging.info(response.json())
     job_id = response.json()['job_id']
     # download image by url to tmp folder
     return job_id
 
 
 async def call_fooocus(prompt, performance):
-    logging.info("Calling fooocus with prompt: " + prompt)
+    logging.info("Calling fooocus with prompt: {prompt}")
     # performance = "Quality" || "Speed" || "Balanced"
     data = return_data(prompt, performance, False)
-    response = requests.post(FOOOCUS_URL + GENERATE_IMAGE_URI, json=data)
+    response = requests.post(FOOOCUS_URL + GENERATE_IMAGE_URI, json=data, timeout=30)
     logging.info(response.json())
 
-    image_url = response.json()[0]['url'].replace("127.0.0.1", "192.168.1.42")
+    image_url = response.json()[0]['url'].replace("127.0.0.1", FOOOCUS_IP)
     # download image by url to tmp folder
     return image_url
 
@@ -129,13 +128,13 @@ async def get_job_status(job_id):
         'require_step_preivew': True
     }
 
-    response = requests.get(url, params=params)
-    logging.info(response.json())
+    response = requests.get(url, params=params, timeout=30)
+    logging.info(response.json()["job_stage"])
     return response.json()
 
 
 def progress_bar(percentage):
     max_length = 10  # Define the length of the progress bar
     filled_length = int(max_length * percentage // 100)  # Calculate filled length
-    bar = '█' * filled_length + '-' * (max_length - filled_length)  # Create the bar
-    return f"[{bar}] {percentage}%"
+    bar_of_the_progress = '█' * filled_length + '-' * (max_length - filled_length)  # Create the bar
+    return f"[{bar_of_the_progress}] {percentage}%"
