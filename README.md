@@ -1,4 +1,4 @@
-# Python Telegram Bot for Image Generation using Fooocus API
+# Telegram Bot for Fooocus
 ![alt img](https://raw.githubusercontent.com/dzhusipov/fooocus-telegram/master/img/LogoFooocusTelegrambot.png)
 ## Overview
 This repository contains the code for a Python-based Telegram bot. This bot interacts with the Fooocus API to generate and preview images.
