@@ -15,15 +15,15 @@ This repository contains the code for a Python-based Telegram bot. This bot inte
 
 ## Installation
 ```bash
-git clone https://github.com/your-github-username/your-repo-name.git
-cd your-repo-name
+git clone git@github.com:dzhusipov/fooocus-telegram.git
+cd fooocus-telegram
 pip install -r requirements.txt
 ```
 
 ## Usage
 Set your Telegram Bot Token and Fooocus API Key in .env file:  
 ```bash
-BOT_TOKEN=123123123:wsdfasdf:12341234
+BOT_TOKEN=1234567890:ABCdefGhIjKlMnOpQrStUvWxYz
 FOOOCUS_IP=127.0.0.1
 FOOOCUS_PORT=8080
 ```
