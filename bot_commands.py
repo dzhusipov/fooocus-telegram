@@ -18,17 +18,22 @@ async def hello(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 
 async def make(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    # Removing "/make" from the string
-    result = update.message.text.replace("/make", "").strip()
-    identifier = await update.message.reply_text("Starting generate...")
+    # # Removing "/make" from the string
+    # result = update.message.text.replace("/make", "").strip()
+    # identifier = await update.message.reply_text("Starting generate...")
 
-    await identifier.edit_text(f'Generating image with prompt: {result}')
-    done_url = await call_fooocus(result, "Speed")
-    file = await get_image_url(done_url)
-    await update.message.reply_photo(file)
+    # await identifier.edit_text(f'Generating image with prompt: {result}')
+    # done_url = await call_fooocus(result, "Speed")
+    # file = await get_image_url(done_url)
+    # await update.message.reply_photo(file)
+    await create_image(update, context)
 
 
 async def make_async(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await create_image(update, context)
+
+
+async def create_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     # Removing "/make" from the string
     result = update.message.text.replace("/async", "").strip()
     text_identifier = await update.message.reply_text("Starting generate...")
@@ -60,7 +65,7 @@ async def make_async(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
     file = await get_image_url(result_image)
     await update.message.reply_photo(file)
-
+    
 
 def setup_handlers(app):
     app.add_handler(CommandHandler("make", make))
