@@ -6,7 +6,7 @@ import base64
 from dotenv import load_dotenv
 from telegram import Update, InputMediaPhoto
 from telegram.ext import CommandHandler, ContextTypes
-from helpers import get_image_url, call_fooocus, call_fooocus_async, get_job_status, progress_bar
+from helpers import get_image_url, call_fooocus_async, get_job_status, progress_bar
 
 # Load API configuration from environment variables
 load_dotenv()
@@ -56,7 +56,8 @@ async def create_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
                 await text_identifier.edit_text(f'{progress_bar(job_status["job_progress"])}')
         except Exception:
             logging.error("Unhandled exception")
-            time.sleep(1)
+        
+        time.sleep(1)
         job_status = await get_job_status(job_id)
 
     await image_identifier.delete()
