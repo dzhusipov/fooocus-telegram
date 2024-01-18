@@ -40,5 +40,4 @@ Contributions, issues, and feature requests are welcome!
 Distributed under the MIT License. See LICENSE.md for more information.  
 
 ## Contact
-Telegram: @DrunkSausage 
-Project Link: https://github.com/dzhusipov/fooocus-telegram/
+Telegram: @DrunkSausage  
