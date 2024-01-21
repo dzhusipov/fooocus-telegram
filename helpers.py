@@ -4,9 +4,7 @@ import requests
 import logging
 from dotenv import load_dotenv
 import shutil
-# import pika
 import uuid
-import json
 
 
 # Load API configuration from environment variables
@@ -16,13 +14,6 @@ FOOOCUS_PORT = os.getenv("FOOOCUS_PORT")
 FOOOCUS_URL = f"http://{FOOOCUS_IP}:{FOOOCUS_PORT}/v1/generation/"
 GENERATE_IMAGE_URI = "text-to-image"
 GET_JOB_STATUS_URI = "query-job"
-
-# rabbitmq
-# rabbitmq_host = os.getenv("RABBITMQ_HOST")
-# connection = pika.BlockingConnection(pika.ConnectionParameters(host=rabbitmq_host))
-# channel = connection.channel()
-# channel.queue_declare(queue='task_queue', durable=True)
-
 
 def return_data(prompt, performance, async_process):
     data = {
