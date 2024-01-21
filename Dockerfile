@@ -7,7 +7,7 @@ WORKDIR /app
 COPY . .
 
 # Path: /app
-RUN pip install request python-telegram-bot python-dotenv
+RUN pip install requests python-telegram-bot python-dotenv
 
 
 # Path: /app
