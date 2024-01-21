@@ -6,7 +6,7 @@ import base64
 from dotenv import load_dotenv
 from telegram import Update, InputMediaPhoto
 from telegram.ext import CommandHandler, ContextTypes
-from helpers import get_image_url, call_fooocus_async, get_job_status, progress_bar
+from helpers import get_image_url, call_fooocus_async, call_fooocus, get_job_status, progress_bar
 
 # Load API configuration from environment variables
 load_dotenv()
