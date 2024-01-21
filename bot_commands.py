@@ -34,11 +34,15 @@ async def make_async(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
 
 async def create_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    print(update)
+    if update.message.chat.id != 151137540 and update.message.chat.id != -1002055222950:
+        await update.message.reply_text("Sorry, you can't use this bot")
+        return
     # Removing "/make" from the string
     result = update.message.text.replace("/async", "").strip()
     text_identifier = await update.message.reply_text("Starting generate...")
 
-    job_id = await call_fooocus_async(result, "Quality")
+    job_id = await call_fooocus_async(result, "Speed")
     job_status = await get_job_status(job_id)
     image_identifier = None
 
