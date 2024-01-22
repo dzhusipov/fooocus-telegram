@@ -17,15 +17,22 @@ This repository contains the code for a Python-based Telegram bot. This bot inte
 ```bash
 git clone git@github.com:dzhusipov/fooocus-telegram.git
 cd fooocus-telegram
-pip install -r requirements.txt
+pip install psycopg2 requests python-telegram-bot python-dotenv
 ```
 
 ## Usage
 Set your Telegram Bot Token and Fooocus API Key in .env file:  
 ```bash
-BOT_TOKEN=1234567890:ABCdefGhIjKlMnOpQrStUvWxYz
-FOOOCUS_IP=127.0.0.1
-FOOOCUS_PORT=8080
+FOOOCUS_IP = 0.0.0.0
+FOOOCUS_PORT = 8080
+BOT_TOKEN = YOUR_BOT_TOKEN
+ADMIN_ID = 123123123123
+GROUP_ID = -123123123123123
+# Database
+PG_DB = postgres
+PG_PASS = 1234567890
+PG_USER = postgres
+PG_HOST = localhost 
 ```
 
 ## Run the bot:
