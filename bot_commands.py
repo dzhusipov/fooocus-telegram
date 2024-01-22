@@ -34,9 +34,10 @@ async def make_async(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
 async def create_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
-    if is_allowed(update.message.chat.id) is not True:
-        await update.message.reply_text("Sorry, you can't use this bot")
-        return
+    # if you want to allow bot to your chat, or only to you - use it
+    # if is_allowed(update.message.chat.id) is not True:
+    #     await update.message.reply_text("Sorry, you can't use this bot")
+    #     return
     
     # Removing "/make" from the string
     result = update.message.text.replace("/async", "").strip()
