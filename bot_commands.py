@@ -57,8 +57,8 @@ async def create_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 
                 # await text_identifier.edit_text(f'Job progress: {job_progress}%')
                 await text_identifier.edit_text(f'{progress_bar(job_status["job_progress"])}')
-        except Exception:
-            logging.error("Unhandled exception")
+        except Exception as e:
+            logging.error("Unhandled exception: %s", e)
 
         time.sleep(1)
         job_status = await get_job_status(job_id)

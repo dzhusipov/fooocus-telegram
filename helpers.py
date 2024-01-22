@@ -100,7 +100,7 @@ async def get_image_url(image_url):
             response.raw.decode_content = True  # Ensure the complete image is downloaded
             shutil.copyfileobj(response.raw, out_file)
 
-        logging.info("Image successfully downloaded to {file_path}")
+        logging.info("Image successfully downloaded to %s", file_path)
         return "tmp/" + file_name
     else:
         logging.error("Failed to retrieve the image. Status code: {response.status_code}")
@@ -109,7 +109,7 @@ async def get_image_url(image_url):
 
 async def call_fooocus_async(prompt, performance):
     logging.info("Calling fooocus async with prompt: {prompt}")
-    task_id = str(uuid.uuid4())
+    # task_id = str(uuid.uuid4())
     
     # # performance = "Quality" || "Speed" || "Balanced"
     data = return_data(prompt, performance, True)
