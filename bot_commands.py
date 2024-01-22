@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from telegram import Update, InputMediaPhoto
 from telegram.ext import CommandHandler, ContextTypes
 from helpers import get_image_url, call_fooocus_async, get_job_status, progress_bar
+from db import add_user_history_record
 
 # Load API configuration from environment variables
 load_dotenv()
@@ -34,8 +35,10 @@ async def make_async(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
 
 async def create_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    
     # Removing "/make" from the string
     result = update.message.text.replace("/async", "").strip()
+    
     text_identifier = await update.message.reply_text("Starting generate...")
 
     job_id = await call_fooocus_async(result, "Quality")
@@ -56,7 +59,7 @@ async def create_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
                 await text_identifier.edit_text(f'{progress_bar(job_status["job_progress"])}')
         except Exception:
             logging.error("Unhandled exception")
-        
+
         time.sleep(1)
         job_status = await get_job_status(job_id)
 
@@ -66,7 +69,11 @@ async def create_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 
     file = await get_image_url(result_image)
     await update.message.reply_photo(file)
-    
+
+    # image to base64 string
+    image_data = base64.b64encode(file.read())
+    add_user_history_record(update.effective_user.id, result, image_data)
+
 
 def setup_handlers(app):
     app.add_handler(CommandHandler("make", make))
