@@ -1,10 +1,10 @@
 # helpers.py
 import os
-import requests
 import logging
-from dotenv import load_dotenv
 import shutil
-import uuid
+# import uuid
+import requests
+from dotenv import load_dotenv
 
 
 # Load API configuration from environment variables
@@ -14,6 +14,9 @@ FOOOCUS_PORT = os.getenv("FOOOCUS_PORT")
 FOOOCUS_URL = f"http://{FOOOCUS_IP}:{FOOOCUS_PORT}/v1/generation/"
 GENERATE_IMAGE_URI = "text-to-image"
 GET_JOB_STATUS_URI = "query-job"
+ADMIN_IP = os.getenv("ADMIN_ID")
+GROUP_ID = os.getenv("GROUP_ID")
+
 
 def return_data(prompt, performance, async_process):
     data = {
@@ -100,7 +103,7 @@ async def get_image_url(image_url):
 
 async def call_fooocus_async(prompt, performance):
     logging.info("Calling fooocus async with prompt: {prompt}")
-    task_id = str(uuid.uuid4())
+    # task_id = str(uuid.uuid4())
     
     # # performance = "Quality" || "Speed" || "Balanced"
     data = return_data(prompt, performance, True)
@@ -158,3 +161,10 @@ def progress_bar(percentage):
     filled_length = int(max_length * percentage // 100)  # Calculate filled length
     bar_of_the_progress = '█' * filled_length + '-' * (max_length - filled_length)  # Create the bar
     return f"[{bar_of_the_progress}] {percentage}%"
+
+
+def is_allowed(update_message_chat_id):
+    if update_message_chat_id != ADMIN_IP and update_message_chat_id != GROUP_ID:
+        return False
+    else:
+        return True

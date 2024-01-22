@@ -1,11 +1,11 @@
 # main.py
 import logging
 import os
+import threading
+import time
 from dotenv import load_dotenv
 from telegram.ext import ApplicationBuilder
 from bot_commands import setup_handlers
-import threading
-import time
 
 
 def clean_tmp_folder():

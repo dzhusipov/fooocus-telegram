@@ -6,12 +6,11 @@ import base64
 from dotenv import load_dotenv
 from telegram import Update, InputMediaPhoto
 from telegram.ext import CommandHandler, ContextTypes
-from helpers import get_image_url, call_fooocus_async, call_fooocus, get_job_status, progress_bar
+from helpers import get_image_url, call_fooocus_async, call_fooocus, get_job_status, progress_bar, is_allowed
 
 # Load API configuration from environment variables
 load_dotenv()
 FOOOCUS_IP = os.getenv("FOOOCUS_IP")
-
 
 async def hello(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(f'Hello {update.effective_user.first_name}')
@@ -34,10 +33,11 @@ async def make_async(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
 
 async def create_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    print(update)
-    if update.message.chat.id != 151137540 and update.message.chat.id != -1002055222950:
+
+    if is_allowed(update.message.chat.id) is not True:
         await update.message.reply_text("Sorry, you can't use this bot")
         return
+    
     # Removing "/make" from the string
     result = update.message.text.replace("/async", "").strip()
     text_identifier = await update.message.reply_text("Starting generate...")
