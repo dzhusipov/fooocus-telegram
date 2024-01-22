@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from telegram import Update, InputMediaPhoto
 from telegram.ext import CommandHandler, ContextTypes
 from helpers import get_image_url, call_fooocus_async, get_job_status, progress_bar
-from db import add_user_history_record
+from db import add_user_history_record_pg
 
 # Load API configuration from environment variables
 load_dotenv()
@@ -67,12 +67,14 @@ async def create_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     await text_identifier.delete()
     result_image = job_status["job_result"][0]["url"].replace("127.0.0.1", FOOOCUS_IP)
 
-    file = await get_image_url(result_image)
-    await update.message.reply_photo(file)
-
+    file_path = await get_image_url(result_image)
+    await update.message.reply_photo(file_path)
+    
     # image to base64 string
-    image_data = base64.b64encode(file.read())
-    add_user_history_record(update.effective_user.id, result, image_data)
+    with open(file_path, 'rb') as file:  # 'rb' for reading in binary mode
+        image_data = base64.b64encode(file.read())
+    
+    add_user_history_record_pg(update.effective_user.id, result, image_data)
 
 
 def setup_handlers(app):
