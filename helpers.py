@@ -1,10 +1,12 @@
 # helpers.py
 import os
-import logging
 import shutil
-# import uuid
 import requests
+import logging
 from dotenv import load_dotenv
+# import uuid
+# import json
+# import pika
 
 
 # Load API configuration from environment variables
@@ -94,7 +96,7 @@ async def get_image_url(image_url):
             response.raw.decode_content = True  # Ensure the complete image is downloaded
             shutil.copyfileobj(response.raw, out_file)
 
-        logging.info("Image successfully downloaded to {file_path}")
+        logging.info("Image successfully downloaded to %s", file_path)
         return "tmp/" + file_name
     else:
         logging.error("Failed to retrieve the image. Status code: {response.status_code}")
@@ -163,8 +165,9 @@ def progress_bar(percentage):
     return f"[{bar_of_the_progress}] {percentage}%"
 
 
-def is_allowed(update_message_chat_id):
-    if update_message_chat_id != ADMIN_IP and update_message_chat_id != GROUP_ID:
+def check_endpoint():
+    try:
+        response = requests.get(f"http://{FOOOCUS_IP}:{FOOOCUS_PORT}/ping", timeout=5)
+        return response.text == "pong"
+    except requests.RequestException:
         return False
-    else:
-        return True

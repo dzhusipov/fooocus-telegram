@@ -11,11 +11,13 @@ from bot_commands import setup_handlers
 def clean_tmp_folder():
     while True:
         tmp_folder = 'tmp'  # Replace with your tmp folder path
-        os.chdir(tmp_folder)  # Step 1: Enter tmp folder
-        for file in os.listdir():  # Step 2: Clear content of folder
-            os.remove(file)
-        os.chdir('..')  # Go back to the original directory
-        time.sleep(60)  # Step 3: Sleep 60 seconds
+        current_time = time.time()
+        for file in os.listdir(tmp_folder):  # Iterate through files
+            file_path = os.path.join(tmp_folder, file)
+            file_mod_time = os.path.getmtime(file_path)
+            if current_time - file_mod_time > 60*5:  # Check if file is older than 5 minutes
+                os.remove(file_path)  # Delete the file
+        time.sleep(60)  # Sleep for 1 minute
 
 
 load_dotenv()
