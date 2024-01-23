@@ -17,11 +17,7 @@ This repository contains the code for a Python-based Telegram bot. This bot inte
 ```bash
 git clone git@github.com:dzhusipov/fooocus-telegram.git
 cd fooocus-telegram
-<<<<<<< HEAD
-pip install requests python-telegram-bot python-dotenv
-=======
 pip install psycopg2 requests python-telegram-bot python-dotenv
->>>>>>> develop
 ```
 
 ## Usage
