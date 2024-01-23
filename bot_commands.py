@@ -6,12 +6,14 @@ import base64
 from dotenv import load_dotenv
 from telegram import Update, InputMediaPhoto
 from telegram.ext import CommandHandler, ContextTypes
-from helpers import get_image_url, call_fooocus_async, get_job_status, progress_bar
+from helpers import get_image_url, call_fooocus_async, get_job_status, progress_bar, check_endpoint
 from db import add_user_history_record_pg
 
 # Load API configuration from environment variables
 load_dotenv()
 FOOOCUS_IP = os.getenv("FOOOCUS_IP")
+ADMIN_ID = os.getenv("ADMIN_ID")
+GROUP_ID = os.getenv("GROUP_ID")
 
 
 async def hello(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -35,6 +37,15 @@ async def make_async(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
 
 async def create_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    
+    print(update)
+    if update.message.chat.id not in [GROUP_ID, ADMIN_ID, -1002122545639]:
+        await update.message.reply_text("Sorry, you can't use this bot")
+        return
+    
+    if check_endpoint() is not True:
+        await update.message.reply_text("Sorry, service under maintenence :(")
+        return
     
     # Removing "/make" from the string
     result = update.message.text.replace("/async", "").strip()

@@ -1,12 +1,12 @@
 # helpers.py
 import os
+import shutil
 import requests
 import logging
 from dotenv import load_dotenv
-import shutil
+# import uuid
+# import json
 # import pika
-import uuid
-import json
 
 
 # Load API configuration from environment variables
@@ -167,3 +167,11 @@ def progress_bar(percentage):
     filled_length = int(max_length * percentage // 100)  # Calculate filled length
     bar_of_the_progress = '█' * filled_length + '-' * (max_length - filled_length)  # Create the bar
     return f"[{bar_of_the_progress}] {percentage}%"
+
+
+def check_endpoint():
+    try:
+        response = requests.get(f"http://{FOOOCUS_IP}:{FOOOCUS_PORT}/ping", timeout=5)
+        return response.text == "pong"
+    except requests.RequestException:
+        return False
