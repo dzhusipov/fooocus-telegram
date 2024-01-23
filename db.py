@@ -8,9 +8,9 @@ def add_user_history_record_pg(chat_id, user_prompt, result_image):
     # Connect to PostgreSQL database
     conn = psycopg2.connect(**db_config())
     cursor = conn.cursor()
-
+    logging.info("Creating cursor")
     # Insert a new record
-    cursor.execute("INSERT INTO user_history (chat_id, user_prompt, result_image) VALUES (%s, %s, %s)", 
+    cursor.execute("INSERT INTO fooocus_api.user_history (chat_id, user_prompt, result_image) VALUES (%s, %s, %s)", 
                    (chat_id, user_prompt, result_image))
 
     # Commit the transaction and close the connection

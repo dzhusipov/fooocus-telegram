@@ -39,7 +39,7 @@ async def make_async(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 async def create_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     
     print(update)
-    if update.message.chat.id not in [GROUP_ID, ADMIN_ID, -1002122545639]:
+    if update.message.chat.id not in [int(GROUP_ID), int(ADMIN_ID), -1002122545639]:
         await update.message.reply_text("Sorry, you can't use this bot")
         return
     
@@ -69,7 +69,7 @@ async def create_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
                 # await text_identifier.edit_text(f'Job progress: {job_progress}%')
                 await text_identifier.edit_text(f'{progress_bar(job_status["job_progress"])}')
         except Exception as e:
-            logging.error("Unhandled exception: %s", e)
+            logging.error("Unhandled job_status exception: %s", e)
 
         time.sleep(1)
         job_status = await get_job_status(job_id)
@@ -86,6 +86,7 @@ async def create_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         image_data = base64.b64encode(file.read())
     
     try:
+        logging.info("starting DB insert")
         add_user_history_record_pg(update.effective_user.id, result, image_data)
     except Exception as e:
         logging.error("Unhandled database exception: %s", e)
