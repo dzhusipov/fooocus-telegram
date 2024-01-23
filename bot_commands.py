@@ -74,7 +74,10 @@ async def create_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     with open(file_path, 'rb') as file:  # 'rb' for reading in binary mode
         image_data = base64.b64encode(file.read())
     
-    add_user_history_record_pg(update.effective_user.id, result, image_data)
+    try:
+        add_user_history_record_pg(update.effective_user.id, result, image_data)
+    except Exception as e:
+        logging.error("Unhandled database exception: %s", e)
 
 
 def setup_handlers(app):
