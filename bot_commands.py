@@ -3,9 +3,10 @@ import logging
 import time
 import os
 import base64
+import requests
 from dotenv import load_dotenv
 from telegram import Update, InputMediaPhoto
-from telegram.ext import CommandHandler, ContextTypes
+from telegram.ext import CommandHandler, ContextTypes, MessageHandler, filters
 from helpers import get_image_url, call_fooocus_async, get_job_status, progress_bar, check_endpoint, call_fooocus, call_whisper
 from db import add_user_history_record_pg
 
@@ -21,6 +22,7 @@ async def hello(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 
 async def make(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    print(".........make.........")
     # Removing "/make" from the string
     result = update.message.text.replace("/make", "").strip()
     identifier = await update.message.reply_text("Starting generate...")
@@ -37,7 +39,7 @@ async def make_async(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
 
 async def create_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    
+    print(".........create_image.........")
     print(update)
     if update.message.chat.id not in [int(GROUP_ID), int(ADMIN_ID), -1002122545639]:
         await update.message.reply_text("Sorry, you can't use this bot")
@@ -93,15 +95,20 @@ async def create_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 
 
 async def audio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    file = update.message.audio.get_file()
-    file_name = update.message.audio.file_name
-    file.download(f"tmp/audio/{file_name}")
-    result_text = await call_whisper(f"tmp/audio/{file_name}")
+    logging.info(".........audio.........")
+    file_name = update.message.document.file_name
+    
+    file = await context.bot.get_file(update.message.document)
+    await file.download_to_drive(f"tmp/{file_name}")
+    
+    result_text = await call_whisper(f"tmp/{file_name}")
     await update.message.reply_text(f'result: {result_text}')
 
 
 def setup_handlers(app):
     app.add_handler(CommandHandler("make", make))
     app.add_handler(CommandHandler("async", make_async))
-    app.add_handler(CommandHandler("audio", make_async))
+    # app.add_handler(CommandHandler("audio", audio))
+    app.add_handler(MessageHandler(filters.ALL, audio))
+    
     # Add other command handlers here

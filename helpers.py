@@ -172,7 +172,13 @@ def progress_bar(percentage):
 async def call_whisper(file_path):
     url = f"http://{WHISPER_IP}:{WHISPER_PORT}/whisper"
     files = {'file': open(file_path, 'rb')}
-    response = requests.post(url, files=files)
+    response = requests.post(url, files=files, timeout=60*10)
+    logging.info( response.status_code )
+    
+    if response.status_code == 500:
+        return "Server side error!"
+    
+    # return "test"
     json_reposnse = response.json()
     return json_reposnse["results"][0]["transcript"]
 
