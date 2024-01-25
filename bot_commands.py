@@ -6,7 +6,7 @@ import base64
 from dotenv import load_dotenv
 from telegram import Update, InputMediaPhoto
 from telegram.ext import CommandHandler, ContextTypes
-from helpers import get_image_url, call_fooocus_async, get_job_status, progress_bar, check_endpoint, call_fooocus
+from helpers import get_image_url, call_fooocus_async, get_job_status, progress_bar, check_endpoint, call_fooocus, call_whisper
 from db import add_user_history_record_pg
 
 # Load API configuration from environment variables
@@ -14,6 +14,7 @@ load_dotenv()
 FOOOCUS_IP = os.getenv("FOOOCUS_IP")
 ADMIN_ID = os.getenv("ADMIN_ID")
 GROUP_ID = os.getenv("GROUP_ID")
+
 
 async def hello(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(f'Hello {update.effective_user.first_name}')
@@ -91,7 +92,16 @@ async def create_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         logging.error("Unhandled database exception: %s", e)
 
 
+async def audio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    file = update.message.audio.get_file()
+    file_name = update.message.audio.file_name
+    file.download(f"tmp/audio/{file_name}")
+    result_text = await call_whisper(f"tmp/audio/{file_name}")
+    await update.message.reply_text(f'result: {result_text}')
+
+
 def setup_handlers(app):
     app.add_handler(CommandHandler("make", make))
     app.add_handler(CommandHandler("async", make_async))
+    app.add_handler(CommandHandler("audio", make_async))
     # Add other command handlers here

@@ -16,6 +16,10 @@ FOOOCUS_PORT = os.getenv("FOOOCUS_PORT")
 FOOOCUS_URL = f"http://{FOOOCUS_IP}:{FOOOCUS_PORT}/v1/generation/"
 GENERATE_IMAGE_URI = "text-to-image"
 GET_JOB_STATUS_URI = "query-job"
+
+WHISPER_IP = os.getenv("WHISPER_IP")
+WHISPER_PORT = os.getenv("WHISPER_PORT")
+
 ADMIN_IP = os.getenv("ADMIN_ID")
 GROUP_ID = os.getenv("GROUP_ID")
 
@@ -163,6 +167,14 @@ def progress_bar(percentage):
     filled_length = int(max_length * percentage // 100)  # Calculate filled length
     bar_of_the_progress = '█' * filled_length + '-' * (max_length - filled_length)  # Create the bar
     return f"[{bar_of_the_progress}] {percentage}%"
+
+
+async def call_whisper(file_path):
+    url = f"http://{WHISPER_IP}:{WHISPER_PORT}/whisper"
+    files = {'file': open(file_path, 'rb')}
+    response = requests.post(url, files=files)
+    json_reposnse = response.json()
+    return json_reposnse["results"][0]["transcript"]
 
 
 def check_endpoint():
