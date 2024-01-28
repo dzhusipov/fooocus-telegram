@@ -21,6 +21,12 @@ async def hello(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(f'Hello {update.effective_user.first_name}')
 
 
+async def help(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    # help message
+    help_message = "just type /async <your prompt> to generate image\n"
+    await update.message.reply_text(help_message)
+    
+
 async def make(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     print(".........make.........")
     # Removing "/make" from the string
@@ -108,6 +114,7 @@ async def audio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 def setup_handlers(app):
     app.add_handler(CommandHandler("make", make))
     app.add_handler(CommandHandler("async", make_async))
+    app.add_handler(CommandHandler("help", help))
     # app.add_handler(CommandHandler("audio", audio))
     app.add_handler(MessageHandler(filters.ALL, audio))
     
