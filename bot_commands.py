@@ -109,11 +109,11 @@ async def audio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     
     # Run ffmpeg command
     formatted_file_name = f"tmp/{file_name.split('.')[0]}-formatted.wav"
-    subprocess.run(["ffmpeg", "-loglevel", "0", "-y", "-i", 
-                    f"tmp/{file_name}", "-ar", "16000", "-ac", "1", 
-                    "-c:a", "pcm_s16le", formatted_file_name], check=True)
+    # await run_ffmpeg(file_name, formatted_file_name)
     
-    result_text = await call_whisper(f"tmp/{formatted_file_name}")
+    subprocess.run(["ffmpeg", "-loglevel", "0", "-y", "-i", f"tmp/{file_name}", "-ar", "16000", "-ac", "1", "-c:a", "pcm_s16le", formatted_file_name])
+
+    result_text = await call_whisper(f"{formatted_file_name}")
     await update.message.reply_text(f'result: {result_text}')
 
 
