@@ -169,7 +169,7 @@ def progress_bar(percentage):
     return f"[{bar_of_the_progress}] {percentage}%"
 
 
-async def call_whisper(file_path):
+async def call_whisper(file_path, lang):
     url = f"http://{WHISPER_IP}:{WHISPER_PORT}/whisper"
     files = {'file': open(file_path, 'rb')}
     response = requests.post(url, files=files, timeout=60*10)
