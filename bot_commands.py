@@ -101,16 +101,16 @@ async def create_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 
 
 async def audio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    lang = update.message.caption
-
-    if lang is None:
-        lang = "en"
-        
     logging.info(".........audio.........")
-    logging.info("Language: %s", lang)
-    file_name = update.message.document.file_name
+    # logging.info(update)
+
+    if update.message.document is not None:
+        file_name = update.message.document.file_name
+        file = await context.bot.get_file(update.message.document)
+    else:
+        file_name = update.message.audio.file_name
+        file = await context.bot.get_file(update.message.audio.file_id)
     
-    file = await context.bot.get_file(update.message.document)
     await file.download_to_drive(f"tmp/{file_name}")
     
     # Run ffmpeg command
@@ -119,7 +119,7 @@ async def audio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     
     subprocess.run(["ffmpeg", "-loglevel", "0", "-y", "-i", f"tmp/{file_name}", "-ar", "16000", "-ac", "1", "-c:a", "pcm_s16le", formatted_file_name])
 
-    result_text = await call_whisper(f"{formatted_file_name}", lang)
+    result_text = await call_whisper(f"{formatted_file_name}")
     await update.message.reply_text(f'result: {result_text}')
 
 
