@@ -3,7 +3,7 @@ import logging
 import time
 import os
 import base64
-import requests
+import subprocess
 from dotenv import load_dotenv
 from telegram import Update, InputMediaPhoto
 from telegram.ext import CommandHandler, ContextTypes, MessageHandler, filters
@@ -107,7 +107,13 @@ async def audio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     file = await context.bot.get_file(update.message.document)
     await file.download_to_drive(f"tmp/{file_name}")
     
-    result_text = await call_whisper(f"tmp/{file_name}")
+    # Run ffmpeg command
+    formatted_file_name = f"tmp/{file_name.split('.')[0]}-formatted.wav"
+    subprocess.run(["ffmpeg", "-loglevel", "0", "-y", "-i", 
+                    f"tmp/{file_name}", "-ar", "16000", "-ac", "1", 
+                    "-c:a", "pcm_s16le", formatted_file_name], check=True)
+    
+    result_text = await call_whisper(f"tmp/{formatted_file_name}")
     await update.message.reply_text(f'result: {result_text}')
 
 
