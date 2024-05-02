@@ -154,7 +154,7 @@ async def get_job_status(job_id):
     print(url)
     params = {
         'job_id': job_id,
-        'require_step_preivew': True
+        'require_step_preview': True
     }
 
     response = requests.get(url, params=params, timeout=30)
