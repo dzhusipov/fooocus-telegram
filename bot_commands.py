@@ -46,8 +46,8 @@ async def make_async(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
 async def create_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     print(".........create_image.........")
-    print(update)
-    if update.message.chat.id not in [int(GROUP_ID), int(ADMIN_ID), -1002122545639]:
+    print(update)                                              
+    if update.message.chat.id not in [int(GROUP_ID), int(ADMIN_ID), -1002122545639, -1001772550506]:
         await update.message.reply_text("Sorry, you can't use this bot")
         return
     
