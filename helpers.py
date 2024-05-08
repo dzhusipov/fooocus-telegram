@@ -25,62 +25,20 @@ GROUP_ID = os.getenv("GROUP_ID")
 
 
 def return_data(prompt, performance, async_process):
+    """
+    Returns a dictionary with the provided parameters.
+
+    Parameters:
+    prompt (str): The prompt for the image generation.
+    performance (str): The performance selection ("Quality", "Speed", "Balanced").
+    async_process (bool): Whether the process should be asynchronous.
+
+    Returns:
+    dict: A dictionary containing the provided parameters.
+    """
     data = {
         "prompt": prompt,
-        "negative_prompt": "",
-        "style_selections": [
-            "Fooocus V2",
-            "Fooocus Enhance",
-            "Fooocus Sharp"
-        ],
         "performance_selection": performance,
-        "aspect_ratios_selection": "1152*896",
-        "image_number": 1,
-        "image_seed": -1,
-        "sharpness": 2,
-        "guidance_scale": 4,
-        "base_model_name": "juggernautXL_version6Rundiffusion.safetensors",
-        "refiner_model_name": "None",
-        "refiner_switch": 0.5,
-        "loras": [
-            {
-                "model_name": "sd_xl_offset_example-lora_1.0.safetensors",
-                "weight": 0.1
-            }
-        ],
-        "advanced_params": {
-            "adaptive_cfg": 7,
-            "adm_scaler_end": 0.3,
-            "adm_scaler_negative": 0.8,
-            "adm_scaler_positive": 1.5,
-            "canny_high_threshold": 128,
-            "canny_low_threshold": 64,
-            "controlnet_softness": 0.25,
-            "debugging_cn_preprocessor": False,
-            "debugging_inpaint_preprocessor": False,
-            "disable_preview": False,
-            "freeu_b1": 1.01,
-            "freeu_b2": 1.02,
-            "freeu_enabled": False,
-            "freeu_s1": 0.99,
-            "freeu_s2": 0.95,
-            "inpaint_disable_initial_latent": False,
-            "inpaint_engine": "v1",
-            "inpaint_respective_field": 1,
-            "inpaint_strength": 1,
-            "mixing_image_prompt_and_inpaint": False,
-            "mixing_image_prompt_and_vary_upscale": False,
-            "overwrite_height": -1,
-            "overwrite_step": -1,
-            "overwrite_switch": -1,
-            "overwrite_upscale_strength": -1,
-            "overwrite_vary_strength": -1,
-            "overwrite_width": -1,
-            "refiner_swap_method": "joint",
-            "sampler_name": "dpmpp_2m_sde_gpu",
-            "scheduler_name": "karras",
-            "skipping_cn_preprocessor": False
-        },
         "require_base64": False,
         "async_process": async_process,
         "webhook_url": "string"
@@ -89,6 +47,15 @@ def return_data(prompt, performance, async_process):
 
 
 async def get_image_url(image_url):
+    """
+    Downloads an image from a given URL and saves it to a temporary directory.
+
+    Parameters:
+    image_url (str): The URL of the image to download.
+
+    Returns:
+    str: The path to the downloaded image, or "error" if the download failed.
+    """
     response = requests.get(image_url, stream=True, timeout=30)
     if response.status_code == 200:
         temp_dir = os.path.join(os.getcwd(), "tmp")

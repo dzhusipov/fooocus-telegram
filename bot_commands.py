@@ -45,6 +45,7 @@ async def make_async(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
 
 async def create_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    
     print(".........create_image.........")
     print(update)                                              
     if update.message.chat.id not in [int(GROUP_ID), int(ADMIN_ID), -1002122545639, -1001772550506]:
@@ -101,6 +102,16 @@ async def create_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 
 
 async def audio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """
+    Handles the 'audio' command. Downloads an audio file and processes it.
+
+    Parameters:
+    update (Update): The update object containing the message.
+    context (ContextTypes.DEFAULT_TYPE): The context object containing the bot and the current chat.
+
+    Returns:
+    None
+    """
     logging.info(".........audio.........")
     # logging.info(update)
 
