@@ -82,9 +82,12 @@ async def create_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 
         time.sleep(1)
         job_status = await get_job_status(job_id)
-
-    await image_identifier.delete()
-    await text_identifier.delete()
+    try:
+        await image_identifier.delete()
+        await text_identifier.delete()
+    except Exception as e:
+            logging.error("Unhandled image_identifier.delete, text_identifier.delete: %s", e)
+            
     result_image = job_status["job_result"][0]["url"].replace("127.0.0.1", FOOOCUS_IP)
 
     file_path = await get_image_url(result_image)

@@ -39,6 +39,47 @@ def return_data(prompt, performance, async_process):
     data = {
         "prompt": prompt,
         "performance_selection": performance,
+        "aspect_ratios_selection": "1152*896",
+        "image_number": 1,
+        "image_seed": -1,
+        "sharpness": 2,
+        "guidance_scale": 4,
+        "base_model_name": "juggernautXL_version6Rundiffusion.safetensors",
+        "refiner_model_name": "None",
+        "refiner_switch": 0.5,
+        "advanced_params": {
+            "adaptive_cfg": 7,
+            "adm_scaler_end": 0.3,
+            "adm_scaler_negative": 0.8,
+            "adm_scaler_positive": 1.5,
+            "canny_high_threshold": 128,
+            "canny_low_threshold": 64,
+            "controlnet_softness": 0.25,
+            "debugging_cn_preprocessor": False,
+            "debugging_inpaint_preprocessor": False,
+            "disable_preview": False,
+            "freeu_b1": 1.01,
+            "freeu_b2": 1.02,
+            "freeu_enabled": False,
+            "freeu_s1": 0.99,
+            "freeu_s2": 0.95,
+            "inpaint_disable_initial_latent": False,
+            "inpaint_engine": "v1",
+            "inpaint_respective_field": 1,
+            "inpaint_strength": 1,
+            "mixing_image_prompt_and_inpaint": False,
+            "mixing_image_prompt_and_vary_upscale": False,
+            "overwrite_height": -1,
+            "overwrite_step": -1,
+            "overwrite_switch": -1,
+            "overwrite_upscale_strength": -1,
+            "overwrite_vary_strength": -1,
+            "overwrite_width": -1,
+            "refiner_swap_method": "joint",
+            "sampler_name": "dpmpp_2m_sde_gpu",
+            "scheduler_name": "karras",
+            "skipping_cn_preprocessor": False
+        },
         "require_base64": False,
         "async_process": async_process,
         "webhook_url": "string"
@@ -151,8 +192,11 @@ async def call_whisper(file_path):
 
 
 def check_endpoint():
+    url = f"http://{FOOOCUS_IP}:{FOOOCUS_PORT}/ping"
+    print(url)
     try:
-        response = requests.get(f"http://{FOOOCUS_IP}:{FOOOCUS_PORT}/ping", timeout=5)
-        return response.text == "pong"
+        response = requests.get(url, timeout=5)
+        return "pong" in response.text
     except requests.RequestException:
+        print("pong is failed")
         return False
