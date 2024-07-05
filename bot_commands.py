@@ -81,7 +81,7 @@ async def chat_completion(prompt):
     messages = [
         {
             "role": "system",
-            "content": "You are a helping to extend prompt for creating detailed image"
+            "content": "You are a helping to extend prompt for creating detailed image. Write just prompt."
         },
         {
             "role": "user",
