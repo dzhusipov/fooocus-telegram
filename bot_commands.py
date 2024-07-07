@@ -9,7 +9,7 @@ import requests
 from dotenv import load_dotenv
 from telegram import Update, InputMediaPhoto
 from telegram.ext import CommandHandler, ContextTypes, MessageHandler, filters
-from helpers import get_image_url, call_fooocus_async, get_job_status, progress_bar, check_endpoint, call_fooocus, call_whisper
+from helpers import extract_text, get_image_url, call_fooocus_async, get_job_status, progress_bar, check_endpoint, call_fooocus, call_whisper
 from db import add_user_history_record_pg
 
 # Load API configuration from environment variables
@@ -18,11 +18,12 @@ FOOOCUS_IP = os.getenv("FOOOCUS_IP")
 ADMIN_ID = os.getenv("ADMIN_ID")
 GROUP_ID = os.getenv("GROUP_ID")
 OPENAPI_KEY = os.getenv("OPENAPI_KEY")
+MOONDREAM_API = os.getenv("MOONDREAM_API")
 
 async def image_gpt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     
-    print(".........image_gpt.........")
-    print(update)
+    logging.info(".........image_gpt.........")
+    logging.info(update)
     
     if update.message.chat.id not in [int(GROUP_ID), int(ADMIN_ID), -1002122545639, -1001772550506]:
         await update.message.reply_text("Sorry, you can't use this bot")
@@ -44,9 +45,9 @@ async def image_gpt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     }
 
     response = requests.post(url, headers=headers, json=data)
-    print(response.json())
+    logging.info(response.json())
 
-    # Print the image URL
+    # logging.info the image URL
     image_url = response.json()['data'][0]['url']
     
     file_path = await get_image_url(image_url)
@@ -63,17 +64,35 @@ async def image_gpt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         logging.error("Unhandled database exception: %s", e)
 
 
-def extract_text(input_string):
-    # Find the first and last occurrences of the double quote
-    first_quote = input_string.find('"')
-    last_quote = input_string.rfind('"')
+async def handle_describe(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    logging.info(".........handle_describe.........")
+    if update.message.photo:
+        photo = update.message.photo[-1]
+        file = await context.bot.get_file(photo.file_id)
+        # generate guid for filename
+               
+        tmp_file_path = "tmp/" + photo.file_id + ".jpg"
+        await file.download_to_drive(custom_path=tmp_file_path)
+        file_name = photo.file_id + ".jpg"
+        try:
+            answer = await describe_image(file_name, tmp_file_path)
+            await update.message.reply_text(answer)
+        except Exception as e:
+            logging.error("Unhandled describe_image exception: %s", e)
+
+async def describe_image(file_name, file_path):
+    logging.info(".........describe_image.........")
+    logging.info(file_path)
     
-    # Extract the text between the first and last double quotes
-    if first_quote != -1 and last_quote != -1 and first_quote != last_quote:
-        return input_string[first_quote + 1:last_quote]
-    else:
-        return input_string
-    
+    with open(file_path, 'rb') as f:
+        files = {'file': (file_name, f, 'image/jpeg')}
+        response = requests.post(MOONDREAM_API, files=files)
+        
+        if response.status_code == 200:
+            result = response.json()
+            return result.get('answer', result.get('error', 'No answer or error found in response.'))
+        else:
+            return f"Failed to get response. Status code: {response.status_code}"
 
 async def chat_completion(prompt):
    
@@ -122,7 +141,7 @@ async def help(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     
 
 async def make(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    print(".........make.........")
+    logging.info(".........make.........")
     # Removing "/make" from the string
     result = update.message.text.replace("/make", "").strip()
     identifier = await update.message.reply_text("Starting generate...")
@@ -140,8 +159,8 @@ async def make_async(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
 async def create_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     
-    print(".........create_image.........")
-    print(update)                                              
+    logging.info(".........create_image.........")
+    logging.info(update)                                              
     if update.message.chat.id not in [int(GROUP_ID), int(ADMIN_ID), -1002122545639, -1001772550506]:
         await update.message.reply_text("Sorry, you can't use this bot")
         return
@@ -238,7 +257,11 @@ def setup_handlers(app):
     app.add_handler(CommandHandler("async", make_async))
     app.add_handler(CommandHandler("help", help))
     app.add_handler(CommandHandler("igpt", image_gpt))
+    app.add_handler(MessageHandler(filters.PHOTO, handle_describe))
+    
+    # app.add_handler(CommandHandler("describe", handle_describe))
+    
     # app.add_handler(CommandHandler("audio", audio))
-    app.add_handler(MessageHandler(filters.ALL, audio))
+    # app.add_handler(MessageHandler(filters.ALL, audio))
     
     # Add other command handlers here

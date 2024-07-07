@@ -86,6 +86,17 @@ def return_data(prompt, performance, async_process):
     }
     return data
 
+def extract_text(input_string):
+    # Find the first and last occurrences of the double quote
+    first_quote = input_string.find('"')
+    last_quote = input_string.rfind('"')
+    
+    # Extract the text between the first and last double quotes
+    if first_quote != -1 and last_quote != -1 and first_quote != last_quote:
+        return input_string[first_quote + 1:last_quote]
+    else:
+        return input_string
+
 
 async def get_image_url(image_url):
     """
